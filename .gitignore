@@ -1,0 +1,6 @@
+#folders
+node_modules/
+cypress/screenshots/
+cypress/videos/
+cypress/results/
+.vscode/
