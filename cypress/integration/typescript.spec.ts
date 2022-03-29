@@ -1,9 +1,9 @@
 import { ProductGroup } from './../support';
 import { MyOwnClass } from '../Shared/MyOwnClass';
 
-describe('Verify Typescript works fine', () => {
+describe('User is able to regiter', () => {
     beforeEach(function () {
-        cy.visit('/');
+        cy.visit('http://localhost:4200/#/');
     });
 
     it('Check strongType', function () {
