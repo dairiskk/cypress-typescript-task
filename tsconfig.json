@@ -8,7 +8,9 @@
             "dom",
             "es2017"
         ],
+        "types": ["cypress"],
         "skipLibCheck": true // do not check types in node_modules folder     
+        
     },
     "include": [
         "node_modules/cypress",

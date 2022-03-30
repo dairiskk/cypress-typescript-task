@@ -1,51 +1,63 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add("dismiss", { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This is will overwrite an existing command --
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+import faker from "@faker-js/faker";
 
-export { }; // this file needs to be a module
-
+let token;
 declare global {
-    namespace Cypress {
-        interface Chainable {
-            myCustomFunction: typeof myCustomFunctionImplementation;
-        }
+  namespace Cypress {
+    interface Chainable<Subject> {
+      register(value: void): Chainable<Element>;
+      createArticle(
+        title: string,
+        description: string,
+        body: string,
+        tags: string[]
+      ): Chainable<Element>;
     }
+  }
 }
 
-export function myCustomFunctionImplementation(subject: any, text: string) {
-    return cy.get(subject)
-        .should('be.visible')
-        .should('contain', text);
+export function register() {
+  let name = faker.name.findName();
+  let email = faker.internet.email();
+  cy.log("new user registered: "+email)
+    cy.request({
+      method: "POST",
+      url: Cypress.env("api_server") + "/api/users",
+      body: {
+        email: email,
+        password: "password",
+        username: name,
+      },
+    }).then((resp) => {
+      token = resp.body.data.token;
+      window.localStorage.setItem(
+        "userInfo",
+      //  '{"token":"' + resp.body.data.token + '"}'
+      '{"username":"'+name+'","email":"'+email+'","password":null,"id":"38f451e0-27e9-47ec-b869-60f31aa7a11a","createdAt":"2022-03-30T18:38:37.000Z","updatedAt":null,"deletedDate":null,"token":"'+token+'"}'
+      );
+    });
 }
 
-/**
- * Checks whether the subject contains the provided text
- *
- * @param {any}         subject   The element you want to check the text for
- * @param {string}      text   The text value
- */
-Cypress.Commands.add('myCustomFunction', (subject: any, text: string) => {
-    return myCustomFunctionImplementation(subject, text);
-});
+export function createArticle(
+  title: string,
+  description: string,
+  body: string,
+  tags: string[]
+) {
+  cy.request({
+    method: "POST",
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+    url: Cypress.env("api_server") + "/api/articles",
+    body: {
+      title: title,
+      description: description,
+      body: body,
+      tagList: tags,
+    },
+  }).then((resp) => {
+    expect(resp.status).to.eq(201);
+  });
+}
+Cypress.Commands.add("register", register);
+Cypress.Commands.add("createArticle", createArticle);

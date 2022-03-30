@@ -1,15 +1,12 @@
-class RegistrationPage {
+class LoginPage {
     constructor() {
-      cy.visit('/#/register');
+      cy.visit('/#/login');
     }
   
     visit() {
-      cy.visit('/#/register');
+      cy.visit('/#/login');
     }
-  
-    getUsernameInput() {
-      return cy.get("input[name='username']");
-    }
+
 
     getEmailInput() {
         return cy.get(`input[name='email']`);
@@ -22,4 +19,4 @@ class RegistrationPage {
   }
   }
   
-  export default RegistrationPage;
+  export default LoginPage;
